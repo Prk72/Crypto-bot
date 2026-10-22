@@ -1,28 +1,38 @@
-name: Crypto Bot Daily Workflow
+name: Crypto Bot
 
 on:
   schedule:
-    - cron: '30 0 * * *'
+    - cron: "30 2 * * *"       # roz subah 8:00 AM IST (UTC 02:30)
   workflow_dispatch:
+    inputs:
+      test:
+        description: "Sirf Telegram test message bhejo"
+        type: boolean
+        default: false
 
 jobs:
   run-script:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
+          cache: pip
 
-      - name: Install Dependencies
-        run: pip install requests google-generativeai
+      - name: Install dependencies
+        run: pip install -r requirements.txt
 
-      - name: Run Script
+      - name: Run script
         env:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-        run: python main.py
-        
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          if [ "${{ inputs.test }}" = "true" ]; then
+            python main.py --test
+          else
+            python main.py
+          fi
