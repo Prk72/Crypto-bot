@@ -1,0 +1,19 @@
+name: Crypto News Bot
+on:
+  schedule:
+    - cron: '*/3 * * * *'
+jobs:
+  run-bot:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+      - name: Install dependencies
+        run: pip install requests
+      - name: Run bot
+        run: python main.py
+        
