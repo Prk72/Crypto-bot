@@ -19,42 +19,53 @@ def fetch_crypto_news():
             for post in posts[:3]:
                 news_text += f"- {post.get('title')}\n"
             return news_text
+        print(f"CryptoPanic API Error: {response.status_code}")
         return ""
     except Exception as e:
-        print(f"Error: {e}")
+        print(f"Error fetching crypto news: {e}")
         return ""
 
 def generate_script(news_text):
     if not GEMINI_API_KEY:
-        print("API key nahi mili.")
+        print("GEMINI_API_KEY nahi mili.")
         return ""
-    model = genai.GenerativeModel("gemini-1.5-flash")
-    prompt = f"Create a short, engaging video script in Hinglish for a crypto influencer based on these news headlines:\n{news_text}"
-    response = model.generate_content(prompt)
-    return response.text
+    try:
+        model = genai.GenerativeModel("gemini-1.5-flash")
+        prompt = f"Create a short, engaging video script in Hinglish for a crypto influencer based on these news headlines:\n{news_text}"
+        response = model.generate_content(prompt)
+        return response.text
+    except Exception as e:
+        print(f"Error generating script with Gemini: {e}")
+        return ""
 
 def send_telegram_message(message):
     if not TELEGRAM_BOT_TOKEN:
-        print("Telegram bot token nahi mila.")
+        print("TELEGRAM_BOT_TOKEN nahi mila.")
         return
     url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
     payload = {
         "chat_id": CHAT_ID,
-        "text": message,
-        "parse_mode": "Markdown"
+        "text": message
     }
     try:
-        requests.post(url, json=payload)
+        response = requests.post(url, json=payload)
+        print(f"Telegram Response Code: {response.status_code}")
+        print(f"Telegram Response Text: {response.text}")
     except Exception as e:
         print(f"Error sending Telegram message: {e}")
 
 if __name__ == "__main__":
+    print("Workflow started...")
     news = fetch_crypto_news()
     if news:
+        print("News fetched successfully.")
         script = generate_script(news)
         if script:
             print("--- Generated Video Script ---")
             print(script)
             send_telegram_message(script)
-            print("Script sent to Telegram!")
+        else:
+            print("Script generation failed.")
+    else:
+        print("No news fetched or API failed.")
         
