@@ -9,7 +9,7 @@ on:
         description: "Konsa content? (auto = time slot ke hisaab se)"
         type: choice
         default: auto
-        options: [auto, news, market, funded, referral]
+        options: [auto, news, market, funded, airdrop, referral]
       test:
         description: "Sirf Telegram test message bhejo"
         type: boolean
@@ -46,7 +46,9 @@ jobs:
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           LINK_HUB_URL: ${{ secrets.LINK_HUB_URL }}
+          PEXAFY_API_KEY: ${{ secrets.PEXAFY_API_KEY }}
           PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
+          PIXABAY_API_KEY: ${{ secrets.PIXABAY_API_KEY }}
           FORCE_MODE: ${{ inputs.mode }}
         run: |
           if [ "${{ inputs.test }}" = "true" ]; then
